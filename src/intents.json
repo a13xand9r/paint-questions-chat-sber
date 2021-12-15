@@ -1,0 +1,69 @@
+{
+  "intents": {
+    "/Да": {
+      "matchers": [
+        {
+          "type": "phrase",
+          "rule": "Да"
+        },
+        {
+          "type": "phrase",
+          "rule": "верно"
+        },
+        {
+          "type": "phrase",
+          "rule": "правильно"
+        }
+      ],
+      "variables": {}
+    },
+    "/Нет": {
+      "matchers": [
+        {
+          "type": "phrase",
+          "rule": "нет"
+        },
+        {
+          "type": "phrase",
+          "rule": "неверно"
+        },
+        {
+          "type": "phrase",
+          "rule": "неправильно"
+        }
+      ],
+      "variables": {}
+    },
+    "/Позвони": {
+      "matchers": [
+        {
+          "type": "phrase",
+          "rule": "позвони еще раз"
+        }
+      ],
+      "variables": {}
+    },
+    "/Другой номер": {
+      "matchers": [
+        {
+          "type": "phrase",
+          "rule": "другой номер"
+        },
+        {
+          "type": "phrase",
+          "rule": "другой телефон"
+        },
+        {
+          "type": "phrase",
+          "rule": "поменяй телефон"
+        },
+        {
+          "type": "phrase",
+          "rule": "поменяй номер"
+        }
+      ],
+      "variables": {}
+    }
+  },
+  "entities": {}
+}
