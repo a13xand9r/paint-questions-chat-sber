@@ -14,29 +14,47 @@ import {
     SaluteRequest
 } from '@salutejs/scenario'
 import { SaluteMemoryStorage } from '@salutejs/storage-adapter-memory'
-import { assistantRightAnswerHandler, noMatchHandler, questionHandler, rightAnswerHandler, runAppHandler, wrongAnswerHandler } from './handlers'
+import { answerHandler, assistantRightAnswerHandler, helloHandler, noMatchHandler, questionHandler, rightAnswerHandler, runAppHandler, wrongAnswerHandler } from './handlers'
 import model from './intents.json'
 require('dotenv').config()
-import * as dictionary from './system.i18n'
 
 const storage = new SaluteMemoryStorage()
 const intents = createIntents(model.intents)
-const { intent, match } = createMatchers<ScenarioRequest, typeof intents>()
+const { intent } = createMatchers<ScenarioRequest, typeof intents>()
 
 const userScenario = createUserScenario<ScenarioRequest>({
-    RightAnswer: {
-        match: req => false,
-        handle: rightAnswerHandler,
+    Hello: {
+        match: () => false,
+        handle: helloHandler,
         children: {
             Yes: {
                 match: intent('/Да', {confidence: 0.5}),
-                handle: ({req, res}, dispatch) => {
+                handle: ({}, dispatch) => {
                     dispatch && dispatch(['Question'])
                 }
             },
             No: {
                 match: intent('/Нет', {confidence: 0.5}),
-                handle: ({req, res}, dispatch) => {
+                handle: ({res}) => {
+                    res.setPronounceText('Тогда до встречи!')
+                    closeApp(res)
+                }
+            }
+        }
+    },
+    RightAnswer: {
+        match: () => false,
+        handle: rightAnswerHandler,
+        children: {
+            Yes: {
+                match: intent('/Да', {confidence: 0.5}),
+                handle: ({}, dispatch) => {
+                    dispatch && dispatch(['Question'])
+                }
+            },
+            No: {
+                match: intent('/Нет', {confidence: 0.5}),
+                handle: ({res}) => {
                     res.setPronounceText('Тогда до встречи!')
                     closeApp(res)
                 }
@@ -44,18 +62,18 @@ const userScenario = createUserScenario<ScenarioRequest>({
         }
     },
     AssistantRightAnswer: {
-        match: req => false,
+        match: () => false,
         handle: assistantRightAnswerHandler,
         children: {
             Yes: {
                 match: intent('/Да', {confidence: 0.5}),
-                handle: ({req, res}, dispatch) => {
+                handle: ({}, dispatch) => {
                     dispatch && dispatch(['Question'])
                 }
             },
             No: {
                 match: intent('/Нет', {confidence: 0.5}),
-                handle: ({req, res}, dispatch) => {
+                handle: ({res}) => {
                     res.setPronounceText('Тогда до встречи!')
                     closeApp(res)
                 }
@@ -63,26 +81,36 @@ const userScenario = createUserScenario<ScenarioRequest>({
         }
     },
     WrongAnswer: {
-        match: req => false,
+        match: () => false,
         handle: wrongAnswerHandler,
         children: {
             Yes: {
                 match: intent('/Да', {confidence: 0.5}),
-                handle: ({req, res}, dispatch) => {
-                    res.setAutoListening(true)
+                handle: ({}, dispatch) => {
+                    dispatch && dispatch(['Question'])
                 }
             },
             No: {
                 match: intent('/Нет', {confidence: 0.5}),
-                handle: ({req, res}, dispatch) => {
+                handle: ({}, dispatch) => {
                     dispatch && dispatch(['AssistantRightAnswer'])
                 }
             }
         }
     },
     Question: {
-        match: req => true,
-        handle: questionHandler
+        match: () => false,
+        handle: questionHandler,
+        children: {
+            Answer: {
+                match: req => !!req.message.original_text,
+                handle: answerHandler
+            }
+        }
+    },
+    Answer: {
+        match: intent('/Цвет', {confidence: 0.5}),
+        handle: answerHandler
     }
 })
 

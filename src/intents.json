@@ -1,5 +1,19 @@
 {
   "intents": {
+    "/Цвет": {
+      "matchers": [
+        {
+          "type": "phrase",
+          "rule": "@color"
+        }
+      ],
+      "variables": {
+        "color": {
+          "required": true,
+          "questions": []
+        }
+      }
+    },
     "/Да": {
       "matchers": [
         {
@@ -43,5 +57,25 @@
       "variables": {}
     }
   },
-  "entities": {}
+  "entities": {
+    "color": {
+      "noMorph": false,
+      "matchers": [
+        {
+          "type": "synonyms",
+          "rule": [
+            "зеленый"
+          ],
+          "value": ""
+        },
+        {
+          "type": "synonyms",
+          "rule": [
+            "оранжевый"
+          ],
+          "value": ""
+        }
+      ]
+    }
+  }
 }
